@@ -1,0 +1,41 @@
+{
+	"pages": [
+		{
+			"path": "pages/uni-ui/uni_ui_test",
+			"style": {
+				"navigationBarTitleText": "uni-ui-调试",
+				"backgroundColor": "#FFFFFF"
+			}
+		},
+		{
+			"path": "pages/uni-ui/indexList",
+			"style": {
+				"navigationBarTitleText": "indexList索引列表",
+				"backgroundColor": "#FFFFFF"
+			}
+		},
+		{
+			"path": "pages/uni-ui/table",
+			"style": {
+				"navigationBarTitleText": "table列表",
+				"backgroundColor": "#FFFFFF"
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "旧衣物捐赠",
+				"backgroundColor": "#FFFFFF"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "邮政公益",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8",
+		"app-plus": {
+			"background": "#efeff4"
+		}
+	}
+}
