@@ -102,7 +102,8 @@
 	$uni-color-error: #e43d33;
 	$uni-opacity-disabled: 0.3;
 	$uni-text-color-disable:#c0c0c0;
-	$uni-primary: #2979ff !default;
+	// $uni-primary: #18AE66 !default;
+	$uni-primary: #18AE66;
 	.uni-calendar-item__weeks-box {
 		flex: 1;
 		/* #ifndef APP-NVUE */

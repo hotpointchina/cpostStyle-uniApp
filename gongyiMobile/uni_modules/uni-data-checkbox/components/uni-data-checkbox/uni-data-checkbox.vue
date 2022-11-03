@@ -452,7 +452,8 @@
 </script>
 
 <style lang="scss">
-	$uni-primary: #2979ff !default;
+	// $uni-primary: #2979ff !default;
+	$uni-primary: #18AE66;
 	$border-color: #DCDFE6;
 	$disable:0.4;
 

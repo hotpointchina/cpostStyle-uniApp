@@ -178,7 +178,8 @@
 	}
 </script>
 <style lang="scss">
-	$uni-primary: #007aff !default;
+	// $uni-primary: #007aff !default;
+	$uni-primary: #18AE66;
 
 	.uni-data-pickerview {
 		flex: 1;
