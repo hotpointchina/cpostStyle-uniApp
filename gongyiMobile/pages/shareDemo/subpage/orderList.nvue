@@ -1,0 +1,362 @@
+<template>
+	<view class="gy_container" id="gy_container">
+		
+		<uni-list>
+			<uni-list-item
+				class="order_list"
+				v-for="order in shareDemoStore.list"
+				:key="order.addressCode"
+			>
+				<!-- 自定义 header -->
+				<template v-slot:header>
+					<view class="created_time">
+						{{ 
+							dayjs().to(dayjs(order.createTime)) == '几秒前'
+								? '刚刚' : dayjs().to(dayjs(order.createTime))
+						}}
+					</view>
+					<view class="order_list_header">
+						<projectIcon :type="'order'" :imgStyle="{width:'56rpx',height:'56rpx'}" />
+						<text class="word">订单</text>
+						<view class="ctrl" @click="showMore(order)">
+							<uni-icons type="more-filled" size="30"></uni-icons>
+						</view>
+					</view>
+				</template>
+				
+				<!-- 自定义 body -->
+				<template v-slot:body>
+					<view class="order_list_body">
+						<view
+							class="line"
+							v-for="item in shareDemoStore.orderInfoCard"
+							:key="item.key"
+						>
+							<text class="title">{{item.title}}</text>
+							<text class="summary">{{order[item.key]}}</text>
+						</view>
+					</view>
+				</template>
+				
+				<!-- 自定义 footer-->
+				<template v-slot:footer>
+					<view class="order_list_footer" @click="gotoDetailPage(order)">
+						<text class="title">详情</text>
+						<uni-icons type="forward" size="24" color="#8e8e92"></uni-icons>
+					</view>
+				</template>
+			</uni-list-item>
+		</uni-list>
+		
+		
+		
+		<uni-popup ref="popup" background-color="#fff">
+			<view class="popup_button_group">
+				<view class="popup_choose" @click="pbClick('add')"><text class="word">添  加</text></view>
+				<view class="popup_choose" @click="pbClick('detail')"><text class="word">查  看</text></view>
+				<view class="popup_choose" @click="pbClick('edit')"><text class="word">编  辑</text></view>
+			</view>
+		</uni-popup>
+		
+		
+	</view>
+</template>
+
+
+
+<script setup>
+  import {
+		onShow,
+		onReady,
+		onPullDownRefresh,
+		onReachBottom
+	} from "@dcloudio/uni-app";
+	import { onMounted, reactive, ref, watch,getCurrentInstance } from "vue";
+	import { dayJS } from '../../../utils/dayJS.js';
+	import * as helper from '../../../utils/handlerFunction.js';
+	import projectIcon from "../../../asset/Icon/projectIcon.vue";
+	import { useShareDemoStore } from '@/stores/shareDemo';
+	const shareDemoStore = useShareDemoStore();
+	
+	const dayjs = dayJS();
+	// console.log( ' 【dayJS】 ', dayjs().to(dayjs('20221020'))  );
+	
+	
+	
+	
+	// 下拉加载
+	onPullDownRefresh( async ()=>{
+		console.log( ' 【onPullDownRefresh】  -> ',  );
+		await shareDemoStore.getMoreList({
+				requestCode:100,
+					detailAddress:true,
+					certificateNumber:true,
+					name:true,
+					phone:true,
+					orderby: 'desc',
+					status: ['start','stop'],
+			});
+		console.log( ' onPullDownRefresh shareDemoStore.list.length -> ', shareDemoStore.list.length );
+		
+	});
+	onReachBottom(()=>{
+		console.log( ' 【onReachBottom】  -> ',  );
+	});
+	
+	/*
+		1: 未完成请求
+		2：已完成请求
+		3：页面初始化的，第一次请求已完成，且已进行过滚动条的设置
+	*/
+	const isRequestListDone = ref(1);
+	onShow(async ()=>{
+		switch ( shareDemoStore.editDataPageTitle ){
+			case '':
+				await shareDemoStore.getList({
+						requestCode:100,
+							detailAddress:true,
+							certificateNumber:true,
+							name:true,
+							phone:true,
+							current: shareDemoStore.currentPage, 
+							// pageSize: shareDemoStore.pageSize,
+							pageSize: 2,
+							orderby: 'desc',
+							status: ['start','stop'],
+					});
+				isRequestListDone.value = 2;
+				break;
+			
+			case '添加':
+				helper.getElementInfo(
+					"#gy_container", 
+					(res)=>{
+						uni.pageScrollTo({
+								duration: 0,
+								scrollTop: res.height 
+						})
+					}
+				);
+				break;
+		}
+		
+		console.log( ' table onShow ', shareDemoStore.list );
+	});
+		
+		
+	watch(
+		isRequestListDone,
+		(nv,ov)=>{
+			console.log( ' 【watch】 isRequestListDone -> ', nv,ov );
+			if( nv === 2 ){
+				helper.getElementInfo(
+					"#gy_container", 
+					(res)=>{
+						uni.pageScrollTo({
+								duration: 0,
+								scrollTop: res.height 
+						})
+					}
+				);
+			}
+		}
+	);
+	
+
+	// 查看详情
+	const gotoDetailPage = (obj)=>{
+		console.log( ' gotoDetailPage -> ',  );
+		shareDemoStore.editDataPageTitle = '详情';
+		shareDemoStore.saveEditData(obj);
+		uni.navigateTo({
+			url: '/pages/shareDemo/subpage/detail'
+		});
+	};
+	
+	// 更多
+	const popup = ref();
+	const showMore = (obj)=>{
+		console.log( ' showMore obj -> ', obj );
+		shareDemoStore.saveEditData(obj);
+		popup.value.open('bottom');
+	};
+	const pbClick = (str)=>{
+		console.log( ' pbClick str -> ', str );
+		switch ( str ){
+			case 'add':
+				shareDemoStore.editDataPageTitle = '添加';
+				uni.navigateTo({
+					url: '/pages/shareDemo/subpage/edit'
+				});
+				break;
+			case 'detail':
+				shareDemoStore.editDataPageTitle = '详情';
+				uni.navigateTo({
+					url: '/pages/shareDemo/subpage/detail'
+				});
+				break;
+			case 'edit':
+				shareDemoStore.editDataPageTitle = '编辑';
+				uni.navigateTo({
+					url: '/pages/shareDemo/subpage/edit'
+				});
+				break;
+		}
+	};
+	
+	
+</script>
+
+
+
+
+
+
+
+<style lang="scss" scoped>
+@import '@/uni_modules/uni-scss/variables.scss';
+@mixin row {
+	display: flex;
+	flex-direction: row;
+}
+@mixin column {
+	display: flex;
+	flex-direction: column;
+}
+
+.gy_container{
+	@include column;
+	justify-content: flex-start;
+	align-items: flex-start;
+	width: 750rpx;
+	padding: 28px;
+	box-sizing: border-box;
+}
+:deep(.uni-list){
+	background-color: transparent;
+}
+.order_list{
+	@include column;
+	position: relative;
+	width: calc(750rpx - 56px);
+	margin: 60rpx 0;
+	padding: 35rpx 32rpx;
+	background: #fff none;
+	border-radius: 16px;
+	box-sizing: border-box;
+	
+	& :deep(.uni-list-item__container),
+	& :deep(.uni-list-item .uni-list-item__container){
+		@include column;
+		width: calc(686rpx - 56px)!important;
+		padding: 0;
+		box-sizing: border-box;
+		overflow: unset !important;
+	}
+	& .created_time{
+		@include row;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		top: -100rpx;
+		left: 0px;
+		width: 100%;
+		color: #99999F;
+	}
+	
+	& .order_list_header{
+		@include row;
+		justify-content: flex-start;
+		align-items: center;
+		width: 100%;
+		padding-bottom: 21rpx;
+		border-bottom: 1px solid #eaeaee;
+		& .word{
+			padding-left: 12rpx;
+		}
+		& .ctrl{
+			justify-self: flex-end;
+			margin-left: auto !important;
+		}
+	}
+	& .order_list_body{
+		@include column;
+		padding-top: 50rpx;
+		
+		& .line{
+			@include row;
+			justify-content: flex-start;
+			align-items: center;
+			width: 100%;
+			padding-bottom: 38rpx;
+			
+			& .title{
+				width: 150rpx;
+				margin-right: 42rpx;
+				color: #8e8e92;
+				text-align: right;
+			}
+			& .summary{
+				width: calc(100% - 200rpx);
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+		}
+	}
+	& .order_list_footer{
+		@include row;
+		justify-content: space-between;
+		padding-top: 33rpx;
+		border-top: 1px solid #eaeaee;
+		& .title{
+			width: auto;
+		}
+	}
+}
+:deep(.uni-list--border-bottom),
+:deep(.uni-list--border-top){
+	background-color: transparent;
+}
+:deep(.uni-list--border){
+	opacity: 0;
+	visibility: hidden;
+}
+#message_bottom,
+.message_bottom{
+	width: 100%;
+	height: 1px;
+}
+
+
+
+
+.popup_error{
+	color: $uni-error;
+}
+.popup_button_group,
+.popup_choose{
+	@include column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+}
+
+
+
+
+.popup_choose{
+	padding: 24rpx 0;
+	border-bottom: 1px solid #d8d8dc;
+	& .word{
+		line-height: 50rpx;
+	}
+	& .word.danger{
+		color: #ff5446;
+	}
+}
+.popup_choose:last-child{
+	border: 0px;
+}
+
+</style>

@@ -1,15 +1,24 @@
 <!-- 本示例未包含完整css，获取外链css请参考上文，在hello uni-app项目中查看 -->
 <template>
 	<view class="uni-margin-wrap">
-		
-		<view class="counterbox">
-			<uni-section class="mb-10" title="导航" type="line"></uni-section>
-			<view class="button_line">
-				<navigator class="btn" url="/pages/shareDemo/index">测试</navigator>
-				<navigator class="btn" url="/pages/shareDemo/subpage/orderList">订单列表页</navigator>
-				<navigator class="btn" url="/pages/shareDemo/subpage/table">table 列表页</navigator>
+		<view class="page_title">
+			<view class="blue_word noborder">.vue 页面</view>
+			<view class="rowbox">
+				<button @click="switchPage">Go .nvue 页面</button>
+				<button type="primary" @click="switchPage">Go table 页面</button>
 			</view>
 		</view>
+				
+		<view class="rowbox">
+			<view class="blue_word" @click="clickBlueWord"> view blue word </view>
+			<text class="red_word" @click="clickRedWord"> text red word </text>
+		</view>
+		
+		
+		<view class="container">
+			<image src="../../static/tempPic/index/weChat.svg" style="width: 50rpx; height: 50rpx;" />
+		</view>
+		
 		
 		
 		<view class="counterbox">
@@ -27,9 +36,7 @@
 			</uni-row>
 		</view>
 		
-		<view class="container">
-			<view class="blue_word"> view blue word </view>
-		</view>
+	
 		
 		
 		<swiper class="swiper" circular :indicator-dots="indicatorDots" :autoplay="autoplay" :interval="interval"
@@ -70,7 +77,7 @@
 			<!-- #endif -->
 			
 			<!-- 插入模式 -->
-			<uni-calendar class="uni-calendar--hook" :showMonth="false" @change="change" @monthSwitch="monthSwitch" />
+			<uni-calendar class="uni-calendar--hook" :selected="info.selected" :showMonth="false" @change="change" @monthSwitch="monthSwitch" />
 		</view>
 	</view>
 		
@@ -83,11 +90,17 @@ import { useShareDemoStore } from '@/stores/shareDemo';
 const shareDemoStore = useShareDemoStore();
 
 
+const clickRedWord = ()=>{
+	console.log( ' clickRedWord 【red】 ' );
+};
+const clickBlueWord = ()=>{
+	console.log( ' clickBlueWord 【blue】 ' );
+};
+
+// 计数器
 const countHandler = (flag)=>{
 	shareDemoStore.countHandler(flag);
 };
-
-
 
 const data = reactive({
 	indicatorDots: true,
@@ -124,6 +137,12 @@ const monthSwitch = (e)=> {
 	console.log('monthSwitchs 返回:', e)
 }
 
+const switchPage = ()=>{
+	uni.navigateTo({
+		url: '/pages/shareDemo/nIndex'
+	});
+}
+
 
 </script>
 
@@ -146,17 +165,51 @@ const monthSwitch = (e)=> {
 		}
 	}
 	
+	.rowbox{
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-around;
+		align-items: center;
+		width: 750rpx;
+		padding: 20rpx;
+		background-color: #fff;
+		box-sizing: border-box;
+	}
+	
+	.page_title{
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: flex-start;
+		width: 710rpx;
+		padding:20rpx;
+		background-color: #fff;
+	}
+	
+	
 	// counter
 	.counterbox{
-		margin: 20rpx 0rpx;
 		padding: 20rpx 0rpx;
-		background-color: #fff;
 	}
 	
 	// 文字
 	.blue_word{
+		margin-bottom: 20rpx;
+		padding: 0 20rpx;
+		background-color: #fff;
+		border: 1px solid dodgerblue;
 		color: dodgerblue;
-		font-size: 50rpx;
+		font-size: 30rpx;
+	}
+	.blue_word.noborder{
+		border: 0px;
+	}
+	.red_word{
+		margin-bottom: 20rpx;
+		padding: 0 20rpx;
+		background-color: #fff;
+		border: 1px solid darkred;
+		color: darkred;
+		font-size: 30rpx;
 	}
 	
 
@@ -194,26 +247,5 @@ const monthSwitch = (e)=> {
 		width: 550rpx;
 		padding: 0 100rpx;
 	}
-	.button_line{
-		display: flex;
-		flex-flow: row wrap;
-		justify-content: flex-start;
-		align-items: center;
-		width: 100%;
-		padding: 30rpx;
-		box-sizing: border-box;
-		
-		& .btn{
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			width: auto;
-			margin: 0 30rpx 30rpx 0;
-			padding: 8px 16px;
-			border: 1px solid #18ae66;
-			border-radius: 8px;
-		}
-	}
-	// 日历
-	
+
 </style>
