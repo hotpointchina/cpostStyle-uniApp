@@ -1,0 +1,11 @@
+@import './styles/index.scss';
+
+
+@mixin row {
+	display: flex;
+	flex-direction: row;
+}
+@mixin column {
+	display: flex;
+	flex-direction: column;
+}
