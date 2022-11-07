@@ -102,6 +102,7 @@ const submit = async ()=>{
 				res = await shareDemoStore.addToList( sendData );
 				break;
 			case '编辑':
+				console.log( ' Edit 编辑 [submit] sendData -> ', sendData );
 				res = await shareDemoStore.modifyList( sendData );
 				console.log( ' Edit 编辑 res -> ', res );
 				break;
@@ -115,7 +116,7 @@ const submit = async ()=>{
 		// 清空 store 中的 editData
 		shareDemoStore.repealEditData();
 		setTimeout(()=>{
-			uni.navigateTo({
+			uni.redirectTo({
 				url: '/pages/shareDemo/subpage/orderList'
 			});
 		},500)
