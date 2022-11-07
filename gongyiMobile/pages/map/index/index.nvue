@@ -1,0 +1,328 @@
+<template>
+	<view class="map_page">
+		<view class="map_wrap">
+			<map 
+				ref="TencentMap" 
+				id="TMap" 
+				:latitude="latitude" 
+				:longitude="longitude" 
+				:markers="markers"
+				style="width: 100%; height:776rpx;" 
+				show-compass="true" 
+				show-location="true" 
+				enable-rotate="true"
+				@markertap="markertap"
+				@callouttap='callouttap'
+			></map>
+		</view>
+
+		<view class="ctrl_map">
+			<button type="primary" @click="moveToLocation">moveToLocation</button>
+			<button type="primary" @click="translateMarker">translateMarker</button>
+			<button type="primary" @click="includePoints">includePoints</button>
+			<button type="primary" @click="getRegion">getRegion</button>
+			<button type="primary" @click="getScale">getScale</button>
+			<button type="primary" @click="addGroundOverlay">addGroundOverlay</button>
+			<button type="primary" @click="addMarkers">addMarkers</button>
+			<button type="primary" @click="fromScreenLocation">fromScreenLocation</button>
+		</view>
+
+
+
+
+	</view>
+</template>
+
+<script setup>
+	import {
+		ref
+	} from 'vue';
+	import {
+		onReady,
+		// onShow,
+		// onPullDownRefresh,
+		// onReachBottom
+	} from "@dcloudio/uni-app";
+
+	const latitude = ref(39.894914);
+	const longitude = ref(116.322062);
+	const markers = [{
+			id: 1,
+			latitude: '39.899000',
+			longitude: '116.319302',
+			iconPath: '/static/map/redPoint.png',
+			width: 20,
+			height: 20
+		},
+		{
+			id: 2,
+			latitude: '39.895050',
+			longitude: '116.322302',
+			iconPath: '/static/map/chinaPost.png',
+			width: 30,
+			height: 30,
+			callout:{//自定义标记点上方的气泡窗口 点击有效  
+				content:'X 邮局',//文本
+				color:'#ffffff',//文字颜色
+				fontSize:14,//文本大小
+				borderRadius:10,//边框圆角
+				borderWidth:'5',
+				bgColor:'#18ae66',//背景颜色
+				display:'ALWAYS',//常显
+			},
+		},
+		{
+			id: 3,
+			latitude: '39.897050',
+			longitude: '116.322302',
+			iconPath: '/static/map/chinaPost.png',
+			width: 20,
+			height: 20
+		},
+		{
+			id: 4,
+			latitude: '39.897050',
+			longitude: '116.323302',
+			iconPath: '/static/map/chinaPost.png',
+			width: 20,
+			height: 20
+		},
+		{
+			id: 5,
+			latitude: '39.895900',
+			longitude: '116.323302',
+			iconPath: '/static/map/chinaPost.png',
+			width: 20,
+			height: 20
+		},
+	];
+
+	const TencentMap = ref();
+	console.log(' 【Map】 TMap -> ', TencentMap);
+	const TMap = uni.createMapContext('TMap', TMap);
+	console.log(' 【Map】 TMap -> ', TMap);
+	TMap.getCenterLocation().then(res => {
+		console.log(' 【Map】 getCenterLocation res -> ', res);
+	});
+
+	const moveToLocation = () => {
+		TMap.moveToLocation({
+			latitude: 39.95390,
+			longitude: 116.4164,
+			// latitude: 23.099994,
+			// longitude: 113.324520,
+			complete: res => {
+				console.log(' 【Map】 moveToLocation res -> ', res);
+			}
+		});
+	};
+	// 移动某一个坐标点
+	const translateMarker = () => {
+		TMap.translateMarker({
+			markerId: 1,
+			destination: {
+				latitude: '39.894700',
+				longitude: '116.319302',
+			},
+			autoRotate: true,
+			duration: 390,
+			animationEnd: res => {
+				console.log(' 【Map】 translateMarker animationEnd res -> ', res);
+			},
+			fail: res => {
+				console.log(' 【Map】 translateMarker fail res -> ', res);
+			},
+		})
+	};
+
+	// 缩放视野展示所有经纬度
+	const includePoints = () => {
+		TMap.includePoints({
+			points: [{
+					latitude: '39.894700',
+					longitude: '116.319302',
+				},
+				{
+					latitude: '39.894600',
+					longitude: '116.319602',
+				}
+			],
+			padding: [120, 120, 120, 120]
+		});
+	};
+
+	// 获取当前地图的视野范围	
+	const getRegion = () => {
+		TMap.getRegion({
+			complete(res) {
+				console.log(' 【Map】 getRegion complete res -> ', res);
+			}
+		})
+	};
+
+	// 获取当前地图的缩放级别
+	const getScale = () => {
+		TMap.getScale({
+			complete(res) {
+				console.log(' 【Map】 getScale complete res -> ', res);
+			}
+		});
+	};
+
+	// 添加个性化图层
+	const addGroundOverlay = () => {
+		TMap.addGroundOverlay({
+			id: 3,
+			zIndex: 999,
+			src: '/static/map/chinaPostStore400.jpg',
+			bounds: {
+				southwest: {
+					latitude: 31.433296,
+					longitude: 104.900113
+				},
+				southwest: {
+					latitude: 30.087357,
+					longitude: 102.982439
+				}
+			},
+			complete(res) {
+				console.log(' 【Map】 addCustomLayer complete res -> ', res);
+			}
+		});
+	};
+
+	// 立即在地图上添加 坐标点
+	const addMarkers = () => {
+		const marker = {
+			id: 1,
+			iconPath: '/static/logo.png',
+			width: 50,
+			height: 50,
+			joinCluster: true, // 指定了该参数才会参与聚合
+			label: {
+				width: 50,
+				height: 30,
+				borderWidth: 1,
+				borderRadius: 10,
+				bgColor: '#ffffff'
+			}
+		};
+
+		const positions = [
+			{
+				// latitude: 23.099994,
+				// longitude: 113.324520,
+				latitude: 39.95390,
+				longitude: 116.4164,
+			}, 
+			{
+				latitude: 39.95390,
+				longitude: 116.4133,
+			}, 
+			{
+				latitude: 39.95390,
+				longitude: 116.4193,
+			}
+		]
+
+		const markers = []
+
+		positions.forEach((p, i) => {
+			const newMarker = Object.assign({}, marker, p)
+			newMarker.id = i + 1
+			newMarker.label.content = `label ${i + 1}`
+			markers.push(newMarker)
+		})
+		TMap.addMarkers({
+			markers,
+			clear: false,
+			complete(res) {
+				console.log('addMarkers', res)
+			}
+		})
+		
+	};
+	
+	TMap.on('markerClusterClick', (res) => {
+		console.log('markerClusterClick', res);
+	})
+	
+	// console.log(
+	// 	' TMap.fromScreenLocation() -> ',
+	// 	TMap.fromScreenLocation({
+	// 		x:100,
+	// 		y:100
+	// 	}).then(res=>{
+	// 		console.log('fromScreenLocation', res);
+	// 	});
+	// );
+	// TMap.fromScreenLocation({
+	// 	x:100,
+	// 	y:100
+	// }).then(res=>{
+	// 	console.log('fromScreenLocation', res);
+	// });
+	
+	const fromScreenLocation = ()=>{
+		TMap.fromScreenLocation({
+			x:100,
+			y:100,
+			complete(res){
+				console.log('fromScreenLocation', res);
+			}
+		})
+	};
+		
+	onReady(()=>{
+		TMap.fromScreenLocation({
+			x:100,
+			y:100,
+			complete(res){
+				console.log('fromScreenLocation', res);
+			}
+		})
+		
+	});
+	
+	
+	// 标记点 点击事件
+	const markertap = (e)=>{
+		console.log("===你点击了标记点===",e)
+	};
+	//地图点击事件
+	const callouttap = (e)=>{
+		console.log('地图点击事件',e)
+	};
+	
+	
+	
+</script>
+
+<style lang="scss" scoped>
+	@import '@/uni_modules/uni-scss/index.scss';
+
+	.map_wrap {
+		@include row;
+		width: 730rpx;
+		padding: 10rpx;
+	}
+
+	.ctrl_map {
+		@include row;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		align-items: center;
+		width: 100%;
+
+		& button {
+			margin: 9px 0 9px 9px;
+		}
+	}
+
+	.custom_layer {
+		@include column;
+		width: 200px;
+		height: 200px;
+		background: #fff none;
+	}
+</style>
