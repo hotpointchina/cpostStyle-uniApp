@@ -1,34 +1,103 @@
 {
 	"pages": [
+		// pages/index/index
+		// {
+		// 	"path": "pages/index/index",
+		// 	"style": {
+		// 		"navigationBarTitleText": "测试",
+		// 		"backgroundColor": "#FFFFFF"
+		// 	}
+		// }
 		{
-			"path": "pages/uni-ui/uni_ui_test",
+			"path": "pages/map/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-ui-调试",
-				"backgroundColor": "#FFFFFF"
-			}
-		},
-		{
-			"path": "pages/uni-ui/indexList",
-			"style": {
-				"navigationBarTitleText": "indexList索引列表",
-				"backgroundColor": "#FFFFFF"
-			}
-		},
-		{
-			"path": "pages/uni-ui/table",
-			"style": {
-				"navigationBarTitleText": "table列表",
-				"backgroundColor": "#FFFFFF"
-			}
-		},
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "旧衣物捐赠",
-				"backgroundColor": "#FFFFFF"
-			}
+					"navigationBarTitleText": "地图",
+					"navigationBarTextStyle":"white",
+					"navigationBarBackgroundColor":"#22c9a1"
+				}
 		}
+		
 	],
+		
+		
+	
+	"subPackages": [
+		{
+			"root": "pages/shareDemo",
+			"pages": [
+				{
+					"path": "subpage/orderList",
+					"style": {
+							"enablePullDownRefresh": true,
+							"navigationBarTitleText": "模拟订单列表页",
+							"navigationBarTextStyle":"white",
+							"navigationBarBackgroundColor":"#22c9a1"
+						}
+				},
+				{
+					"path": "subpage/table",
+					"style": {
+							"navigationBarTitleText": "模拟 table 列表页",
+							"navigationBarTextStyle":"white",
+							"navigationBarBackgroundColor":"#22c9a1"
+						}
+				},
+				{
+					"path": "subpage/edit",
+					"style": {
+							"navigationBarTitleText": "编辑",
+							"navigationBarTextStyle":"white",
+							"navigationBarBackgroundColor":"#22c9a1"
+						}
+				},
+				{
+					"path": "subpage/detail",
+					"style": {
+							"navigationBarTitleText": "详情",
+							"navigationBarTextStyle":"white",
+							"navigationBarBackgroundColor":"#22c9a1"
+						}
+				},
+				{
+					"path": "index",
+					"style": {
+							"navigationBarTitleText": "shareDemo-vue",
+							"navigationBarTextStyle":"white",
+							"navigationBarBackgroundColor":"#22c9a1"
+						}
+				},
+				{
+					"path": "nIndex",
+					"style": {
+							"navigationBarTitleText": "shareDemo-vue-nIndex",
+							"navigationBarTextStyle":"white",
+							"navigationBarBackgroundColor":"#22c9a1"
+						}
+				}
+			]
+		}
+		// ,{
+		// 	"root": "pages/map",
+		// 	"pages": [
+		// 		{
+		// 			"path": "index/index",
+		// 			"style": {
+		// 					"navigationBarTitleText": "地图",
+		// 					"navigationBarTextStyle":"white",
+		// 					"navigationBarBackgroundColor":"#22c9a1"
+		// 				}
+		// 		}
+		// 	]
+		// }
+
+
+	],
+	
+		
+		
+		
+		
+		
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "邮政公益",
