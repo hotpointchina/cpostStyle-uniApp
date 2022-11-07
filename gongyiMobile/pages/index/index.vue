@@ -6,6 +6,7 @@
 			<uni-section class="mb-10" title="导航" type="line"></uni-section>
 			<view class="button_line">
 				<navigator class="btn" url="/pages/shareDemo/index">测试</navigator>
+				<navigator class="btn" url="/pages/map/index/index">地图</navigator>
 				<navigator class="btn" url="/pages/shareDemo/subpage/orderList">订单列表页</navigator>
 				<navigator class="btn" url="/pages/shareDemo/subpage/table">table 列表页</navigator>
 			</view>
@@ -123,6 +124,7 @@ const change = (e)=> {
 const monthSwitch = (e)=> {
 	console.log('monthSwitchs 返回:', e)
 }
+
 
 
 </script>
