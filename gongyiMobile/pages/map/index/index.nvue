@@ -1,5 +1,6 @@
 <template>
 	<view class="map_page">
+		<!-- #ifdef MP-WEIXIN -->
 		<view class="map_wrap">
 			<map 
 				ref="TencentMap" 
@@ -15,7 +16,16 @@
 				@callouttap='callouttap'
 			></map>
 		</view>
+		<!-- #endif  -->
 
+
+
+		<!-- #ifdef H5 -->
+		<view id="h5_tmap" class="h5_tmap"> </view>
+		<!-- #endif -->
+
+
+		
 		<view class="ctrl_map">
 			<button type="primary" @click="moveToLocation">moveToLocation</button>
 			<button type="primary" @click="translateMarker">translateMarker</button>
@@ -26,8 +36,7 @@
 			<button type="primary" @click="addMarkers">addMarkers</button>
 			<button type="primary" @click="fromScreenLocation">fromScreenLocation</button>
 		</view>
-
-
+	
 
 
 	</view>
@@ -35,14 +44,24 @@
 
 <script setup>
 	import {
-		ref
+		reactive,
+		ref,
+		watch
 	} from 'vue';
 	import {
+		onInit,
+		onLoad,
 		onReady,
 		// onShow,
 		// onPullDownRefresh,
 		// onReachBottom
 	} from "@dcloudio/uni-app";
+	
+	<!-- #ifdef H5 -->
+	import * as H5TMapFunction from '../Function/TMap.js';
+	<!-- #endif -->
+
+
 
 	const latitude = ref(39.894914);
 	const longitude = ref(116.322062);
@@ -50,14 +69,16 @@
 			id: 1,
 			latitude: '39.899000',
 			longitude: '116.319302',
-			iconPath: '/static/map/redPoint.png',
+			iconPath: '/static/map/chinaPost.png',
 			width: 20,
 			height: 20
 		},
 		{
 			id: 2,
-			latitude: '39.895050',
-			longitude: '116.322302',
+			// latitude: '39.895050',
+			// longitude: '116.322302',
+			latitude: '39.895090',
+			longitude: '116.32402',
 			iconPath: '/static/map/chinaPost.png',
 			width: 30,
 			height: 30,
@@ -97,15 +118,56 @@
 		},
 	];
 
+	
 	const TencentMap = ref();
 	console.log(' 【Map】 TMap -> ', TencentMap);
+
+	
+	<!-- #ifdef H5 -->
+	// 初始化地图上面的 坐标
+	const geometries = markers.map(it=>({
+		...it,
+		"styleId": 'CPost',  //指定样式id
+	}));
+	const h5Marker = {
+		styles: {
+			name: "CPost",
+			"width": 20,  // 点标记样式宽度（像素）
+			"height": 20, // 点标记样式高度（像素）
+			"src": '/static/map/chinaPost.png',  //图片路径
+			//焦点在图片中的像素位置，一般大头针类似形式的图片以针尖位置做为焦点，圆形点以圆心位置为焦点
+			"anchor": { x: 16, y: 32 }  
+		},
+		geometries
+	};
+	
+	
+	// 初始化地图
+	const h5Map = H5TMapFunction.initH5Map({
+		latitude:latitude.value,
+		longitude:longitude.value,
+		marker: JSON.parse( JSON.stringify(h5Marker) )
+	});
+	
+	
+	
+	console.log(' 【Map-h5】 h5Map -> ', h5Map );
+	<!-- #endif  -->
+	
+	
+	
+	<!-- #ifdef MP-WEIXIN -->
 	const TMap = uni.createMapContext('TMap', TMap);
 	console.log(' 【Map】 TMap -> ', TMap);
 	TMap.getCenterLocation().then(res => {
 		console.log(' 【Map】 getCenterLocation res -> ', res);
 	});
-
+	<!-- #endif  -->
+	
+	
+	// 移动地图到 某个坐标
 	const moveToLocation = () => {
+		<!-- #ifdef MP-WEIXIN -->
 		TMap.moveToLocation({
 			latitude: 39.95390,
 			longitude: 116.4164,
@@ -115,9 +177,19 @@
 				console.log(' 【Map】 moveToLocation res -> ', res);
 			}
 		});
+		<!-- #endif  -->
+		
+		<!-- #ifdef H5 -->
+		console.log(' 【Map-h5】 moveToLocation res -> ', );
+		h5Map.map.setCenter(new TMap.LatLng( 39.95390, 116.4164 ));
+		<!-- #endif  -->
 	};
+	
+	
+	
 	// 移动某一个坐标点
 	const translateMarker = () => {
+		<!-- #ifdef MP-WEIXIN -->
 		TMap.translateMarker({
 			markerId: 1,
 			destination: {
@@ -132,9 +204,25 @@
 			fail: res => {
 				console.log(' 【Map】 translateMarker fail res -> ', res);
 			},
-		})
+		});
+		<!-- #endif  -->
+		
+		
+		<!-- #ifdef H5 -->
+		console.log(' 【Map-h5】 translateMarker TMap -> ', TMap );
+		console.log(' 【Map-h5】 translateMarker h5Map.markerLayer -> ', h5Map.markerLayer );
+		h5Map.markerLayer.updateGeometries([
+			{
+				"styleId":"CPost",
+				"id": 2,
+				"position": new TMap.LatLng(39.897060, 116.323302),
+			}
+		]);
+		<!-- #endif  -->
 	};
 
+
+	<!-- #ifdef MP-WEIXIN -->
 	// 缩放视野展示所有经纬度
 	const includePoints = () => {
 		TMap.includePoints({
@@ -191,7 +279,7 @@
 		});
 	};
 
-	// 立即在地图上添加 坐标点
+	// 立即在地图上添加 坐标点			
 	const addMarkers = () => {
 		const marker = {
 			id: 1,
@@ -247,22 +335,6 @@
 		console.log('markerClusterClick', res);
 	})
 	
-	// console.log(
-	// 	' TMap.fromScreenLocation() -> ',
-	// 	TMap.fromScreenLocation({
-	// 		x:100,
-	// 		y:100
-	// 	}).then(res=>{
-	// 		console.log('fromScreenLocation', res);
-	// 	});
-	// );
-	// TMap.fromScreenLocation({
-	// 	x:100,
-	// 	y:100
-	// }).then(res=>{
-	// 	console.log('fromScreenLocation', res);
-	// });
-	
 	const fromScreenLocation = ()=>{
 		TMap.fromScreenLocation({
 			x:100,
@@ -272,7 +344,9 @@
 			}
 		})
 	};
-		
+	
+	
+	
 	onReady(()=>{
 		TMap.fromScreenLocation({
 			x:100,
@@ -284,7 +358,6 @@
 		
 	});
 	
-	
 	// 标记点 点击事件
 	const markertap = (e)=>{
 		console.log("===你点击了标记点===",e)
@@ -294,6 +367,8 @@
 		console.log('地图点击事件',e)
 	};
 	
+	<!-- #endif  -->
+		
 	
 	
 </script>
@@ -316,6 +391,7 @@
 
 		& button {
 			margin: 9px 0 9px 9px;
+			background-color: #18AE66;
 		}
 	}
 
@@ -325,4 +401,10 @@
 		height: 200px;
 		background: #fff none;
 	}
+	
+	/* #ifdef H5 */
+	.h5_tmap{
+		height: 600px;
+	}
+	/* #endif */
 </style>
