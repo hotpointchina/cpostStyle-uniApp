@@ -89,12 +89,12 @@
 		console.log( ' 【onPullDownRefresh】  -> ',  );
 		await shareDemoStore.getMoreList({
 				requestCode:100,
-					detailAddress:true,
-					certificateNumber:true,
-					phone:true,
-					name:true,
-					orderby: 'desc',
-					status: ['start','stop'],
+				detailAddress:true,
+				certificateNumber:true,
+				phone:true,
+				name:true,
+				orderby: 'desc',
+				status: ['start','stop'],
 			});
 		console.log( ' onPullDownRefresh shareDemoStore.list.length -> ', shareDemoStore.list.length );
 		
@@ -118,10 +118,12 @@
 							certificateNumber:true,
 							phone:true,
 							name:true,
-							current: shareDemoStore.currentPage, 
-							// pageSize: shareDemoStore.pageSize,
-							pageSize: 2,
-							orderby: 'desc',
+							pageConfig:{
+								current: shareDemoStore.currentPage, 
+								// pageSize: shareDemoStore.pageSize,
+								pageSize: 2,
+								orderby: 'desc',
+							},
 							status: ['start','stop'],
 					});
 				isRequestListDone.value = 2;
